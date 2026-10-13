@@ -5,11 +5,36 @@ import { RefreshCw } from 'lucide-react';
 interface LoadingScreenProps {
   minimal?: boolean;
   message?: string;
+  logoUrl?: string;
 }
 
-export function LoadingScreen({ minimal = false, message }: LoadingScreenProps) {
+export function LoadingScreen({ minimal = false, message, logoUrl }: LoadingScreenProps) {
   const [statusStep, setStatusStep] = useState(0);
   const [elapsed, setElapsed] = useState(0);
+  const [imgErrorCount, setImgErrorCount] = useState(0);
+
+  const getInitialLogo = () => {
+    if (logoUrl) return logoUrl;
+    try {
+      const stored = localStorage.getItem('site_logo_url');
+      if (stored && stored.trim()) return stored;
+    } catch {}
+    return logoImg;
+  };
+
+  const [currentLogo, setCurrentLogo] = useState<string>(getInitialLogo);
+
+  const handleImageError = () => {
+    setImgErrorCount((prev) => {
+      const next = prev + 1;
+      if (next === 1) {
+        setCurrentLogo(logoImg);
+      } else if (next === 2) {
+        setCurrentLogo('/realtech-logo.png');
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -70,12 +95,19 @@ export function LoadingScreen({ minimal = false, message }: LoadingScreenProps) 
           <div className="absolute -inset-1.5 rounded-xl border border-primary/15 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite_0.5s] opacity-20" />
           
           {/* Logo container */}
-          <div className="w-16 h-16 rounded-2xl bg-card border border-border/80 shadow-md flex items-center justify-center overflow-hidden">
-            <img 
-              src={logoImg} 
-              alt="Realtech" 
-              className="w-10 h-10 object-contain animate-fade-in"
-            />
+          <div className="w-16 h-16 rounded-2xl bg-card border border-border/80 shadow-md flex items-center justify-center overflow-hidden p-2">
+            {imgErrorCount >= 3 ? (
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-sky-600 flex items-center justify-center text-primary-foreground font-black text-xl shadow-inner">
+                R
+              </div>
+            ) : (
+              <img 
+                src={currentLogo} 
+                alt="Realtech Logo" 
+                className="w-full h-full object-contain animate-fade-in"
+                onError={handleImageError}
+              />
+            )}
           </div>
         </div>
 

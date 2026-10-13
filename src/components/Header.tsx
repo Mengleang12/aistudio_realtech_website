@@ -119,7 +119,12 @@ export const Header = ({
           {/* Desktop Logo & Store Name */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden bg-background shadow-xs border border-border/60 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200">
-              <img src={realtechLogo} alt="Realtech" className="w-full h-full object-contain p-0.5" />
+              <img 
+                src={realtechLogo} 
+                alt="Realtech" 
+                className="w-full h-full object-contain p-0.5" 
+                onError={(e) => { (e.target as HTMLImageElement).src = '/realtech-logo.png'; }}
+              />
             </div>
             <div className="hidden sm:block">
               <div className="flex items-center gap-1.5">

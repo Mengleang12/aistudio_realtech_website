@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" id="viewport-meta" />
-    <link rel="icon" type="image/png" href="https://realtechcomputer.com/assets/images/Realtech.png">
+    <link rel="icon" type="image/png" href="/realtech-logo.png">
     <link rel="apple-touch-icon" href="/pwa-192x192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -22,7 +22,7 @@
     <meta property="og:site_name" content="Realtech Computer" />
     
     
-    <meta property="og:image" content="https://realtechcomputer.com/assets/images/Realtech.png">
+    <meta property="og:image" content="https://realtechcomputer.com/realtech-logo.png">
     <meta property="og:url" content="https://realtechcomputer.com/" />
     <meta property="og:locale" content="en_US" />
 
@@ -30,7 +30,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     
     
-    <meta name="twitter:image" content="https://realtechcomputer.com/assets/images/Realtech.png">
+    <meta name="twitter:image" content="https://realtechcomputer.com/realtech-logo.png">
 
     <!-- JSON-LD Organization -->
     <script type="application/ld+json">
@@ -40,7 +40,7 @@
       "name": "Realtech Computer",
       "description": "MacBook & Portable Monitor Store in Cambodia",
       "url": "https://realtechcomputer.com",
-      "logo": "https://realtechcomputer.com/assets/images/Realtech.png",
+      "logo": "https://realtechcomputer.com/realtech-logo.png",
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://realtechcomputer.com/?search={search_term_string}",
@@ -52,7 +52,7 @@
   <meta name="twitter:title" content="Realtech Computer - MacBook &amp; Portable Monitor Store in Cambodia">
   <meta property="og:description" content="Shop MacBooks, portable monitors, laptops, and tech accessories at Realtech Computer Cambodia. Best prices, warranty included, and fast delivery.">
   <meta name="twitter:description" content="Shop MacBooks, portable monitors, laptops, and tech accessories at Realtech Computer Cambodia. Best prices, warranty included, and fast delivery.">
-    <link rel="preload" as="image" href="https://realtechcomputer.com/assets/images/Realtech.png">
+    <link rel="preload" as="image" href="/realtech-logo.png">
 
     <!-- Pre-mount instant styling & theme initialization -->
     <style id="preloader-styles">
@@ -213,7 +213,7 @@
         <div class="pre-logo-wrapper">
           <div class="pre-ring"></div>
           <div class="pre-logo-card">
-            <img src="https://realtechcomputer.com/assets/images/Realtech.png" alt="Realtech Logo" />
+            <img src="/realtech-logo.png" alt="Realtech Logo" onerror="this.onerror=null; this.src='/favicon.ico';" />
           </div>
         </div>
         <div class="pre-brand-title">Realtech Computer</div>
@@ -227,6 +227,14 @@
       </div>
       <script>
         (function() {
+          try {
+            var customLogo = localStorage.getItem('site_logo_url');
+            if (customLogo) {
+              var pImg = document.querySelector('.pre-logo-card img');
+              if (pImg) pImg.src = customLogo;
+            }
+          } catch(e) {}
+
           var label = document.getElementById('pre-status-label');
           if (!label) return;
           var messages = [

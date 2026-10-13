@@ -28,7 +28,7 @@ interface SEOHeadProps {
 
 const SITE_NAME = "Realtech Computer";
 const DEFAULT_DESCRIPTION = "Shop MacBooks, portable monitors, and tech accessories at Realtech Computer. Best prices in Cambodia with warranty and fast delivery.";
-const DEFAULT_IMAGE = "https://realtechcomputer.com/assets/images/Realtech.png";
+const DEFAULT_IMAGE = "https://realtechcomputer.com/realtech-logo.png";
 const SITE_URL = "https://realtechcomputer.com";
 
 export const SEOHead = ({

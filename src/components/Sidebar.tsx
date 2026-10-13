@@ -60,7 +60,12 @@ export const Sidebar = ({ activeCategory, onCategoryChange, isOpen = false, onTo
       <div className="h-16 flex items-center justify-between px-4 border-b border-border/60">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg overflow-hidden bg-background border border-border/60 flex items-center justify-center shrink-0">
-            <img src={realtechLogo} alt="Realtech" className="w-full h-full object-contain p-0.5" />
+            <img 
+              src={realtechLogo} 
+              alt="Realtech" 
+              className="w-full h-full object-contain p-0.5" 
+              onError={(e) => { (e.target as HTMLImageElement).src = '/realtech-logo.png'; }}
+            />
           </div>
           <div>
             <h3 className="font-bold text-foreground text-sm leading-tight">Realtech Store</h3>

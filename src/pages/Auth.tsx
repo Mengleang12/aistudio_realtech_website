@@ -413,7 +413,12 @@ const Auth = () => {
         {/* Logo */}
         <div className="text-center mb-6">
           <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
-            <img src={brandLogo} alt={siteName} className="w-full h-full object-contain" />
+            <img 
+              src={brandLogo} 
+              alt={siteName} 
+              className="w-full h-full object-contain" 
+              onError={() => setBrandLogo(realtechLogoFallback)}
+            />
           </div>
           <h1 className="text-xl font-semibold text-foreground">
             {siteName.includes(' ') ? <>{siteName.split(' ').slice(0, -1).join(' ')} <span className="text-primary">{siteName.split(' ').slice(-1)}</span></> : siteName}

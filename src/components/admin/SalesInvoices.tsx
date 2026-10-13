@@ -1172,7 +1172,14 @@ const InvoicesTab = () => {
                             <FileText className="w-4 h-4 text-primary" />
                           </div>
                           <div>
-                            <span className="font-mono text-xs font-semibold text-foreground">#{order.id.slice(0, 8).toUpperCase()}</span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedOrder(order)}
+                              className="font-mono text-xs font-semibold text-foreground hover:text-primary hover:underline text-left cursor-pointer transition-colors"
+                              title="Click to view invoice details"
+                            >
+                              #{order.id.slice(0, 8).toUpperCase()}
+                            </button>
                             {order.serial_number && (
                               <p className="text-[10px] text-muted-foreground/70 mt-0.5">SN: {order.serial_number}</p>
                             )}
@@ -1298,39 +1305,72 @@ const InvoicesTab = () => {
                         ) : <span className="text-xs text-muted-foreground">—</span>}
                       </td>
                       <td className="px-4 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-0.5 opacity-70 group-hover:opacity-100 transition-opacity">
-                          {order.status !== 'paid' && order.status !== 'cancelled' && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"
-                              onClick={() => setMarkPaidOrderTarget(order)}
-                              disabled={markPaidMutation.isPending}
-                              title="Set to Paid"
-                            >
-                              <CheckCircle className="w-3.5 h-3.5" />
-                            </Button>
-                          )}
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handlePrint(order)} title="Print Invoice"><Printer className="w-3.5 h-3.5" /></Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => setReceivedNoteOrder(order)} title="Customer Received Note (Sign / Handover)"><FileCheck2 className="w-3.5 h-3.5" /></Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10" onClick={() => setPackageLabelOrder(order)} title="Print Package Label (A5)"><Package className="w-3.5 h-3.5" /></Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => printCustomerLabelDirect(order, resolveCustomerAddress(order))} title="Print Label"><Tag className="w-3.5 h-3.5" /></Button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-2.5 gap-1.5 text-xs font-semibold text-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all shadow-2xs cursor-pointer"
+                            onClick={() => handlePrint(order)}
+                            title="Print Invoice"
+                          >
+                            <Printer className="w-3.5 h-3.5 text-primary" />
+                            <span>Print</span>
+                          </Button>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="w-3.5 h-3.5" /></Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/70 cursor-pointer rounded-lg"
+                                title="More options"
+                              >
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => setSelectedOrder(order)} className="cursor-pointer"><Eye className="w-3.5 h-3.5 mr-2" /> View</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => setPackageLabelOrder(order)} className="cursor-pointer font-medium text-amber-600 dark:text-amber-400"><Package className="w-3.5 h-3.5 mr-2" /> Package Label (A5)</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => setReceivedNoteOrder(order)} className="cursor-pointer font-medium text-primary"><FileCheck2 className="w-3.5 h-3.5 mr-2" /> Received Note (Sign / View)</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => setEditOrder(order)} className="cursor-pointer"><Pencil className="w-3.5 h-3.5 mr-2" /> Edit</DropdownMenuItem>
+                            <DropdownMenuContent align="end" className="w-52 shadow-lg">
+                              <DropdownMenuItem onSelect={() => setSelectedOrder(order)} onClick={() => setSelectedOrder(order)} className="cursor-pointer">
+                                <Eye className="w-3.5 h-3.5 mr-2 text-muted-foreground" /> View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => setEditOrder(order)} onClick={() => setEditOrder(order)} className="cursor-pointer">
+                                <Pencil className="w-3.5 h-3.5 mr-2 text-muted-foreground" /> Edit Invoice
+                              </DropdownMenuItem>
                               {order.status !== 'paid' && order.status !== 'cancelled' && (
-                                <DropdownMenuItem onClick={() => { const totalAmt = typeof order.amount === "string" ? parseFloat(order.amount as string) : order.amount; const paid = (order.payments || []).reduce((s: number, p: any) => s + (typeof p.amount === "string" ? parseFloat(p.amount) : p.amount), 0); setPaymentAmount(Math.max(0, totalAmt - paid).toFixed(2)); setPaymentOrder(order); }} className="cursor-pointer"><CreditCard className="w-3.5 h-3.5 mr-2" /> Add Payment</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => setMarkPaidOrderTarget(order)} onClick={() => setMarkPaidOrderTarget(order)} className="cursor-pointer text-emerald-600 dark:text-emerald-400 font-medium">
+                                  <CheckCircle className="w-3.5 h-3.5 mr-2" /> Mark as Paid
+                                </DropdownMenuItem>
                               )}
-                              <DropdownMenuItem onClick={() => printCustomerLabelDirect(order, resolveCustomerAddress(order))} className="cursor-pointer"><Tag className="w-3.5 h-3.5 mr-2" /> Print Label</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handlePrintDeliveryA5(order)} className="cursor-pointer"><Truck className="w-3.5 h-3.5 mr-2" /> Print Delivery (A5)</DropdownMenuItem>
+                              {order.status !== 'paid' && order.status !== 'cancelled' && (
+                                <DropdownMenuItem onSelect={() => {
+                                  const totalAmt = typeof order.amount === "string" ? parseFloat(order.amount as string) : order.amount;
+                                  const paid = (order.payments || []).reduce((s: number, p: any) => s + (typeof p.amount === "string" ? parseFloat(p.amount) : p.amount), 0);
+                                  setPaymentAmount(Math.max(0, totalAmt - paid).toFixed(2));
+                                  setPaymentOrder(order);
+                                }} onClick={() => {
+                                  const totalAmt = typeof order.amount === "string" ? parseFloat(order.amount as string) : order.amount;
+                                  const paid = (order.payments || []).reduce((s: number, p: any) => s + (typeof p.amount === "string" ? parseFloat(p.amount) : p.amount), 0);
+                                  setPaymentAmount(Math.max(0, totalAmt - paid).toFixed(2));
+                                  setPaymentOrder(order);
+                                }} className="cursor-pointer">
+                                  <CreditCard className="w-3.5 h-3.5 mr-2 text-muted-foreground" /> Add Payment
+                                </DropdownMenuItem>
+                              )}
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer" onClick={() => setDeleteOrderTarget(order)}><Trash2 className="w-3.5 h-3.5 mr-2" /> Delete</DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => setReceivedNoteOrder(order)} onClick={() => setReceivedNoteOrder(order)} className="cursor-pointer font-medium text-primary">
+                                <FileCheck2 className="w-3.5 h-3.5 mr-2" /> Received Note (Sign/View)
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => setPackageLabelOrder(order)} onClick={() => setPackageLabelOrder(order)} className="cursor-pointer font-medium text-amber-600 dark:text-amber-400">
+                                <Package className="w-3.5 h-3.5 mr-2" /> Package Label (A5)
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => printCustomerLabelDirect(order, resolveCustomerAddress(order))} onClick={() => printCustomerLabelDirect(order, resolveCustomerAddress(order))} className="cursor-pointer">
+                                <Tag className="w-3.5 h-3.5 mr-2 text-muted-foreground" /> Print Customer Label
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => handlePrintDeliveryA5(order)} onClick={() => handlePrintDeliveryA5(order)} className="cursor-pointer">
+                                <Truck className="w-3.5 h-3.5 mr-2 text-muted-foreground" /> Print Delivery (A5)
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onSelect={() => setDeleteOrderTarget(order)} onClick={() => setDeleteOrderTarget(order)} className="text-destructive focus:text-destructive cursor-pointer">
+                                <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
@@ -1357,8 +1397,8 @@ const InvoicesTab = () => {
 
       {/* Invoice Detail Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={(open) => { if (!open) setSelectedOrder(null); }}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-lg p-0 flex flex-col max-h-[88vh] overflow-hidden">
+          <DialogHeader className="p-4 sm:p-5 pb-3 border-b border-border/50 shrink-0 bg-muted/20">
             <DialogTitle className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary" />
               Invoice #{selectedOrder?.id.slice(0, 8).toUpperCase()}
@@ -1368,7 +1408,8 @@ const InvoicesTab = () => {
             const amount = typeof selectedOrder.amount === "string" ? parseFloat(selectedOrder.amount as string) : selectedOrder.amount;
             const status = statusConfig[selectedOrder.status] || statusConfig.pending;
             return (
-              <div className="space-y-5">
+              <div className="flex flex-col flex-1 min-h-0">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
                 <div className="flex items-center justify-between">
                   <Badge variant={status.variant} className="text-sm px-3 py-1">{status.label}</Badge>
                   <span className="text-sm text-muted-foreground">{selectedOrder.created_at ? new Date(selectedOrder.created_at.replace(/-/g, '/')).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "—"}</span>
@@ -1544,24 +1585,46 @@ const InvoicesTab = () => {
                   );
                 })()}
 
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button variant="outline" className="flex-1 gap-2" onClick={() => handlePrint(selectedOrder)}>
-                    <Printer className="w-4 h-4" /> Print Invoice
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1 gap-2 border-amber-300 dark:border-amber-700/60 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold"
-                    onClick={() => setPackageLabelOrder(selectedOrder)}
-                  >
-                    <Package className="w-4 h-4 text-amber-600 dark:text-amber-400" /> Package Label (A5)
-                  </Button>
-                  <Button
-                    variant="default"
-                    className="flex-1 gap-2 bg-primary font-semibold"
-                    onClick={() => setReceivedNoteOrder(selectedOrder)}
-                  >
-                    <FileCheck2 className="w-4 h-4" /> Received Note (Sign/View)
-                  </Button>
+                </div>
+
+                <div className="p-3 sm:p-4 border-t border-border bg-card/95 backdrop-blur-xs shrink-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-1.5 font-semibold text-xs text-foreground hover:text-primary hover:border-primary/40 cursor-pointer w-full"
+                      onClick={() => handlePrint(selectedOrder)}
+                    >
+                      <Printer className="w-4 h-4 text-primary shrink-0" />
+                      <span>Print Invoice</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-1.5 border-amber-300 dark:border-amber-700/60 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold text-xs cursor-pointer w-full"
+                      onClick={() => {
+                        const target = selectedOrder;
+                        setSelectedOrder(null);
+                        setTimeout(() => setPackageLabelOrder(target), 50);
+                      }}
+                    >
+                      <Package className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                      <span>Package Label</span>
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="h-9 gap-1.5 bg-primary hover:bg-primary/90 font-semibold text-xs cursor-pointer w-full"
+                      onClick={() => {
+                        const target = selectedOrder;
+                        setSelectedOrder(null);
+                        setTimeout(() => setReceivedNoteOrder(target), 50);
+                      }}
+                    >
+                      <FileCheck2 className="w-4 h-4 shrink-0" />
+                      <span>Received Note</span>
+                    </Button>
+                  </div>
                 </div>
               </div>
             );
