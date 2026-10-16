@@ -728,109 +728,296 @@ const InvoicesTab = () => {
 
   const handlePrintDeliveryA5 = async (order: AdminOrder) => {
     const branding = await getInvoiceBranding();
-    const customerName = order.customer?.full_name || order.user?.full_name || (order as any).customer_name || "Walk-in";
+    const logoUrl = branding.site_logo_url?.trim() || "/realtech-logo.png";
+    const senderPhone = branding.support_phone?.trim() || "087 75 3939";
     const customerPhone = resolveCustomerPhone(order);
     const customerAddress = resolveCustomerAddress(order) || "Phnom Penh, Cambodia";
     const orderId = order.id.slice(0, 8).toUpperCase();
-    const orderDate = new Date(order.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-
-    // Build product list
-    const items = order.items && order.items.length > 0
-      ? order.items.map(i => {
-          let name = i.product_name || order.product_name || "";
-          if (i.variant_label) name += ` (${i.variant_label})`;
-          return `${name} ×${i.quantity}`;
-        })
-      : aggregateProductLines(order.product_name).map(p => `${p.name} ×${p.quantity}`);
+    const siteName = branding.site_name?.trim() || "REALTECH COMPUTER";
 
     const printWindow = window.open("", "_blank");
     if (!printWindow) { toast.error("Pop-up blocked. Please allow pop-ups."); return; }
 
-    printWindow.document.write(`<!DOCTYPE html><html><head><title>Delivery - ${orderId}</title>
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Delivery Slip - ${orderId}</title>
+      <meta charset="utf-8" />
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        *{margin:0;padding:0;box-sizing:border-box}
-        @page{size:A5;margin:10mm 12mm}
-        body{font-family:'Inter',system-ui,sans-serif;color:#1f2937;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:14px;line-height:1.5}
-        .page{max-width:128mm;margin:0 auto;padding:6mm 0}
-        .header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:3px solid ${branding.primary_color}}
-        .brand{display:flex;align-items:center;gap:10px}
-        .brand-icon{width:44px;height:44px;border-radius:6px;overflow:hidden;flex-shrink:0}
-        .brand-icon img{width:100%;height:100%;object-fit:contain}
-        .brand-name{font-size:16px;font-weight:700;color:#111827}
-        .brand-sub{font-size:10px;color:#6b7280;line-height:1.3}
-        .tag{text-align:right}
-        .tag-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:${branding.primary_color}}
-        .tag-id{font-size:13px;font-weight:600;color:#111827;margin-top:2px}
-        .tag-date{font-size:10px;color:#6b7280;margin-top:1px}
-        .section{margin-top:16px}
-        .section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9ca3af;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-        .section-title::after{content:'';flex:1;height:1px;background:#e5e7eb}
-        .card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px}
-        .info-row{display:flex;gap:8px;margin-bottom:8px}
-        .info-row:last-child{margin-bottom:0}
-        .info-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#9ca3af;min-width:70px}
-        .info-value{font-size:14px;font-weight:500;color:#111827}
-        .info-value.phone{font-size:18px;font-weight:700;color:#111827;letter-spacing:0.5px}
-        .info-value.address{font-size:13px;color:#374151;line-height:1.5;white-space:pre-wrap}
-        .products-list{list-style:none;padding:0}
-        .products-list li{padding:6px 0;border-bottom:1px dashed #e5e7eb;font-size:13px;color:#374151}
-        .products-list li:last-child{border-bottom:none}
-        .footer{margin-top:20px;text-align:center;padding-top:10px;border-top:1px solid #e5e7eb}
-        .footer p{font-size:9px;color:#9ca3af}
-        @media print{body{padding:0}.page{max-width:100%}}
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Kantumruy+Pro:wght@400;500;600;700;800&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        @page { size: A5; margin: 8mm 10mm; }
+        body {
+          font-family: 'Inter', 'Kantumruy Pro', system-ui, -apple-system, sans-serif;
+          color: #111827;
+          background: #ffffff;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          font-size: 14px;
+          line-height: 1.4;
+        }
+        .page {
+          max-width: 132mm;
+          margin: 0 auto;
+          padding: 4mm 0;
+        }
+        .slip-container {
+          border: 2.5px solid #111827;
+          border-radius: 14px;
+          overflow: hidden;
+          background: #ffffff;
+        }
+
+        /* Top Header with Brand Logo */
+        .slip-header {
+          background: #0f172a;
+          color: #ffffff;
+          padding: 12px 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 2px solid #111827;
+        }
+        .brand-block {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .brand-logo {
+          width: 44px;
+          height: 44px;
+          object-fit: contain;
+          border-radius: 8px;
+          background: #ffffff;
+          padding: 3px;
+          flex-shrink: 0;
+          border: 1px solid rgba(255,255,255,0.2);
+        }
+        .brand-name {
+          font-size: 16px;
+          font-weight: 800;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          color: #ffffff;
+          line-height: 1.2;
+        }
+        .brand-tagline {
+          font-size: 10px;
+          color: #94a3b8;
+          font-weight: 500;
+          margin-top: 1px;
+        }
+        .header-tag {
+          text-align: right;
+        }
+        .slip-badge {
+          display: inline-block;
+          background: #2563eb;
+          color: #ffffff;
+          padding: 3px 10px;
+          border-radius: 6px;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 1.2px;
+          text-transform: uppercase;
+        }
+        .order-ref {
+          font-size: 12px;
+          font-weight: 700;
+          color: #cbd5e1;
+          margin-top: 3px;
+          font-family: monospace;
+        }
+
+        /* Fragile Warning Banner */
+        .fragile-banner {
+          background: #fffbeb;
+          border-bottom: 2px dashed #f59e0b;
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+        .symbols-cluster {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+        }
+        .caution-svg {
+          width: 40px;
+          height: 36px;
+        }
+        .fragile-svg {
+          width: 32px;
+          height: 32px;
+          color: #d97706;
+        }
+        .warning-text-group {
+          flex: 1;
+        }
+        .khmer-warning {
+          font-size: 18px;
+          font-weight: 800;
+          color: #92400e;
+          line-height: 1.25;
+          letter-spacing: 0.3px;
+        }
+        .en-warning {
+          font-size: 10.5px;
+          font-weight: 800;
+          color: #b45309;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          margin-top: 2px;
+        }
+
+        /* Slip Content */
+        .slip-content {
+          padding: 16px 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        /* Information Cards */
+        .info-card {
+          border-radius: 10px;
+          padding: 12px 14px;
+        }
+        .sender-card {
+          background: #f8fafc;
+          border: 1.5px solid #e2e8f0;
+        }
+        .receiver-card {
+          background: #ffffff;
+          border: 2px solid #0f172a;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+        .location-card {
+          background: #f8fafc;
+          border: 1.5px solid #e2e8f0;
+        }
+
+        .card-label {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
+          margin-bottom: 4px;
+        }
+        .sender-card .card-label { color: #64748b; }
+        .receiver-card .card-label { color: #2563eb; font-weight: 800; }
+        .location-card .card-label { color: #64748b; }
+
+        .label-svg {
+          width: 14px;
+          height: 14px;
+        }
+
+        .sender-phone-num {
+          font-size: 21px;
+          font-weight: 800;
+          color: #1e293b;
+          letter-spacing: 0.8px;
+          font-family: 'Inter', system-ui, sans-serif;
+        }
+        .receiver-phone-num {
+          font-size: 30px;
+          font-weight: 900;
+          color: #000000;
+          letter-spacing: 1.5px;
+          line-height: 1.15;
+          font-family: 'Inter', system-ui, sans-serif;
+        }
+        .location-text {
+          font-size: 19px;
+          font-weight: 700;
+          color: #0f172a;
+          line-height: 1.45;
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+
+        @media print {
+          body { padding: 0; }
+          .page { max-width: 100%; }
+        }
       </style></head><body>
       <div class="page">
-        <div class="header">
-          <div class="brand">
-            ${branding.site_logo_url ? `<div class="brand-icon"><img src="${branding.site_logo_url}" alt="Logo" /></div>` : ""}
-            <div>
-              <div class="brand-name">${branding.site_name || "Store"}</div>
-              ${branding.support_phone ? `<div class="brand-sub">📞 ${branding.support_phone}</div>` : ""}
+        <div class="slip-container">
+          <!-- Top Header with Brand Logo -->
+          <div class="slip-header">
+            <div class="brand-block">
+              <img src="${logoUrl}" alt="Logo" class="brand-logo" onerror="this.onerror=null; this.src='/realtech-logo.png';" />
+              <div>
+                <div class="brand-name">${siteName}</div>
+                <div class="brand-tagline">Store Delivery & Courier Slip</div>
+              </div>
+            </div>
+            <div class="header-tag">
+              <span class="slip-badge">Delivery Slip</span>
+              <div class="order-ref">#${orderId}</div>
             </div>
           </div>
-          <div class="tag">
-            <div class="tag-title">Delivery Slip</div>
-            <div class="tag-id">#${orderId}</div>
-            <div class="tag-date">${orderDate}</div>
-          </div>
-        </div>
 
-        <div class="section">
-          <div class="section-title">Customer Information</div>
-          <div class="card">
-            <div class="info-row">
-              <div class="info-label">Name</div>
-              <div class="info-value">${customerName}</div>
+          <!-- Fragile Warning Banner with Symbol and Khmer Text -->
+          <div class="fragile-banner">
+            <div class="symbols-cluster">
+              <!-- Caution Yellow Triangle Symbol -->
+              <svg viewBox="0 0 100 88" class="caution-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 50 7 L 92 78 C 94 82 91 86 86 86 L 14 86 C 9 86 6 82 8 78 L 50 7 Z" fill="#FFD200" stroke="#111827" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+                <path d="M 50 28 L 50 56" stroke="#111827" stroke-width="7.5" stroke-linecap="round"/>
+                <circle cx="50" cy="71" r="4.2" fill="#111827" />
+              </svg>
+              <!-- Fragile Broken Glass Symbol -->
+              <svg viewBox="0 0 24 24" class="fragile-svg" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v20M8 22h8M19 3v4c0 3.31-2.69 6-6 6h-2c-3.31 0-6-2.69-6-6V3h14zM12 13v9" />
+                <path d="M9 7l2 3-2 3" />
+              </svg>
             </div>
-            <div class="info-row">
-              <div class="info-label">Phone</div>
-              <div class="info-value phone">${customerPhone || "—"}</div>
-            </div>
-            <div class="info-row">
-              <div class="info-label">Address</div>
-              <div class="info-value address">${customerAddress}</div>
+            <div class="warning-text-group">
+              <div class="khmer-warning">ប្រយ័ត្នបាក់បែក ឬ សើម</div>
+              <div class="en-warning">FRAGILE · HANDLE WITH CARE · KEEP DRY</div>
             </div>
           </div>
-        </div>
 
-        <div class="section">
-          <div class="section-title">Items (${items.length})</div>
-          <div class="card">
-            <ul class="products-list">
-              ${items.map(item => `<li>${item}</li>`).join("")}
-            </ul>
+          <!-- Core Delivery Fields Only: Sender Phone, Receiver Phone, Location -->
+          <div class="slip-content">
+            <!-- Sender Phone -->
+            <div class="info-card sender-card">
+              <div class="card-label">
+                <svg class="label-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <span>ផ្ញើរ / Sender Phone</span>
+              </div>
+              <div class="sender-phone-num">${senderPhone}</div>
+            </div>
+
+            <!-- Receiver Phone (Hero) -->
+            <div class="info-card receiver-card">
+              <div class="card-label">
+                <svg class="label-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <span>ទទួល / Receiver Phone</span>
+              </div>
+              <div class="receiver-phone-num">${customerPhone || "—"}</div>
+            </div>
+
+            <!-- Location -->
+            <div class="info-card location-card">
+              <div class="card-label">
+                <svg class="label-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>ទីតាំង / Delivery Location</span>
+              </div>
+              <div class="location-text">${customerAddress}</div>
+            </div>
           </div>
-        </div>
-
-        ${order.notes ? `
-        <div class="section">
-          <div class="section-title">Notes</div>
-          <div class="card" style="font-size:12px;color:#374151">${order.notes}</div>
-        </div>` : ""}
-
-        <div class="footer">
-          <p>${branding.site_name || "Store"} — Thank you for your purchase</p>
         </div>
       </div>
       </body></html>`);

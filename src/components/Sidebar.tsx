@@ -1,4 +1,4 @@
-import { LayoutGrid, X, ShoppingCart, CreditCard, Settings, LogIn, Package, MapPin, Phone, Send, ShieldCheck, Heart } from "lucide-react";
+import { LayoutGrid, X, ShoppingCart, CreditCard, Settings, LogIn, Package, MapPin, Phone, Send, ShieldCheck, Heart, Flame } from "lucide-react";
 import { useLanguage, useTranslations } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/hooks/useWishlist";
@@ -146,6 +146,18 @@ export const Sidebar = ({ activeCategory, onCategoryChange, isOpen = false, onTo
           <p className="px-3 py-1 text-[11px] font-bold text-muted-foreground uppercase tracking-wider select-none">
             {language === "km" ? "សេវាកម្មរហ័ស" : "Quick Services"}
           </p>
+
+          <Link
+            to="/promotions"
+            onClick={() => onToggle?.()}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all mb-1"
+          >
+            <Flame className="w-4 h-4 text-amber-500 animate-pulse shrink-0" />
+            <span className="flex-1 truncate">{language === "km" ? "ប្រូម៉ូសិនពិសេស" : "Hot Promotions"}</span>
+            <span className="bg-red-600 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-xs">
+              HOT
+            </span>
+          </Link>
 
           <Link
             to="/wishlist"

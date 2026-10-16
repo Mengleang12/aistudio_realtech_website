@@ -1,5 +1,12 @@
 import { ReactNode } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 // Re-export primitives for complex/custom dialog layouts
@@ -43,17 +50,23 @@ export const AdminDialog = ({
 }: AdminDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn(sizeClasses[size], className)}>
-        <DialogTitle>{title}</DialogTitle>
-        {description && (
-          <DialogHeader className="mb-2">
-            <DialogDescription>{description}</DialogDescription>
+      <DialogContent className={cn(sizeClasses[size], "p-0 overflow-hidden flex flex-col", className)}>
+        {title ? (
+          <DialogHeader className="p-4 sm:p-5 border-b border-border/60 bg-muted/20 shrink-0 pr-12">
+            <DialogTitle className="text-base sm:text-lg font-bold flex items-center gap-2">{title}</DialogTitle>
+            {description && (
+              <DialogDescription className="text-xs text-muted-foreground mt-0.5">{description}</DialogDescription>
+            )}
           </DialogHeader>
-        )}
-        <div className="flex flex-col flex-1 min-h-0">
+        ) : null}
+        <div className="flex flex-col flex-1 min-h-0 overflow-y-auto p-4 sm:p-6" style={{ WebkitOverflowScrolling: 'touch' }}>
           {children}
         </div>
-        {footer && <DialogFooter className="shrink-0 border-t border-border pt-4 mt-4 px-0">{footer}</DialogFooter>}
+        {footer && (
+          <div className="shrink-0 border-t border-border/60 p-3 sm:p-4 bg-muted/20 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+            {footer}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

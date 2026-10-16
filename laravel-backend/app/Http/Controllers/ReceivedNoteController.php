@@ -17,33 +17,44 @@ class ReceivedNoteController extends Controller
             $query->where('order_id', $request->order_id);
         }
 
-        return response()->json($query->latest()->get());
+        $notes = $query->latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'notes'   => $notes,
+            'data'    => $notes,
+        ]);
     }
 
     public function show($id)
     {
         $note = CustomerReceivedNote::with('order')->findOrFail($id);
-        return $this->success($note);
+
+        return response()->json([
+            'success' => true,
+            'note'    => $note,
+            'data'    => $note,
+        ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'order_id'                   => 'required|exists:orders,id',
-            'invoice_ref'                => 'required|string',
-            'receipt_type'               => 'required|in:full,partial',
-            'receiver_name'              => 'required|string|max:150',
-            'receiver_phone'             => 'nullable|string|max:50',
-            'receiver_relation'          => 'nullable|string',
-            'receiver_address'           => 'nullable|string',
-            'delivery_type'              => 'nullable|string',
-            'delivered_by_name'          => 'nullable|string|max:150',
-            'total_ordered_items'        => 'required|integer|min:0',
-            'total_received_in_this_note'=> 'required|integer|min:0',
-            'total_pending_remaining'    => 'required|integer|min:0',
-            'general_notes'              => 'nullable|string',
-            'customer_signature'         => 'nullable|string',
-            'items'                      => 'required|array',
+            'order_id'                    => 'required|exists:orders,id',
+            'invoice_ref'                 => 'required|string',
+            'receipt_type'                => 'required|in:full,partial',
+            'receiver_name'               => 'required|string|max:150',
+            'receiver_phone'              => 'nullable|string|max:50',
+            'receiver_relation'           => 'nullable|string',
+            'receiver_address'            => 'nullable|string',
+            'delivery_type'               => 'nullable|string',
+            'delivered_by_name'           => 'nullable|string|max:150',
+            'total_ordered_items'         => 'required|integer|min:0',
+            'total_received_in_this_note' => 'required|integer|min:0',
+            'total_pending_remaining'     => 'required|integer|min:0',
+            'general_notes'               => 'nullable|string',
+            'customer_signature'          => 'nullable|string',
+            'items'                       => 'required|array',
         ]);
 
         $noteId = 'RN-' . date('Ym') . '-' . strtoupper(Str::random(4));
@@ -69,7 +80,12 @@ class ReceivedNoteController extends Controller
             'items'                       => $validated['items'],
         ]);
 
-        return $this->success($note, 'Customer Received Note created successfully', 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer Received Note created successfully',
+            'note'    => $note,
+            'data'    => $note,
+        ], 201);
     }
 
     public function destroy($id)
@@ -77,6 +93,9 @@ class ReceivedNoteController extends Controller
         $note = CustomerReceivedNote::findOrFail($id);
         $note->delete();
 
-        return $this->success(null, 'Received note deleted');
+        return response()->json([
+            'success' => true,
+            'message' => 'Received note deleted',
+        ]);
     }
 }

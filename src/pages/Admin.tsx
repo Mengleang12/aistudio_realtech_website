@@ -7,7 +7,8 @@ import {
   ChevronLeft, ChevronRight, Users, BarChart3, Bell, Shield, Activity, 
   UserX, Tag, Play, Home, Menu, Download, Star, TrendingUp, Settings2, Loader2, ClipboardPaste, ShieldAlert, DollarSign,
   FolderTree, Bookmark, SlidersHorizontal, Boxes, AlertTriangle, PackageCheck, RefreshCw, FileText, Pencil,
-  ShoppingBag, Truck, Wand2, Image, User, Lock, Eye, EyeOff, ScanBarcode, StickyNote, Camera, Monitor, ArrowUpDown
+  ShoppingBag, Truck, Wand2, Image, User, Lock, Eye, EyeOff, ScanBarcode, StickyNote, Camera, Monitor, ArrowUpDown,
+  Flame
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,7 @@ import { RoleManagement } from "@/components/admin/RoleManagement";
 import { ActivityLogs } from "@/components/admin/ActivityLogs";
 import { UserStatusManagement } from "@/components/admin/UserStatusManagement";
 import { CouponManagement } from "@/components/admin/CouponManagement";
+import { PromotionManagement } from "@/components/admin/PromotionManagement";
 import { PaymentHistoryAdmin } from "@/components/admin/PaymentHistoryAdmin";
 import { CategoryManagement } from "@/components/admin/CategoryManagement";
 import { BrandManagement } from "@/components/admin/BrandManagement";
@@ -1228,7 +1230,7 @@ const ProductForm = ({ app, onSave, onCancel, onNavigateTab }: ProductFormProps)
 };
 
 // ─── Sidebar Nav ──────────────────────────────────────────────────────────────
-type AdminTab = "analytics" | "apps" | "categories" | "brands" | "attributes" | "print_labels" | "sliders" | "users" | "staff_users" | "payments" | "sales" | "stock" | "invoices" | "purchases" | "suppliers" | "reports" | "roles" | "notifications" | "activity" | "status" | "coupons" | "reviews" | "settings" | "warranties" | "notes" | "quotations";
+type AdminTab = "analytics" | "apps" | "categories" | "brands" | "attributes" | "print_labels" | "sliders" | "users" | "staff_users" | "payments" | "sales" | "stock" | "invoices" | "purchases" | "suppliers" | "reports" | "roles" | "notifications" | "activity" | "status" | "promotions" | "coupons" | "reviews" | "settings" | "warranties" | "notes" | "quotations";
 
 interface NavItem {
   id: AdminTab;
@@ -1280,6 +1282,7 @@ const navGroups: NavGroup[] = [
     items: [
       { id: "payments", label: "Payments", icon: TrendingUp, permission: "orders.view" },
       { id: "users", label: "Customers", icon: Users, permission: "users.view" },
+      { id: "promotions", label: "Promotions", icon: Flame, permission: "coupons.manage" },
       { id: "coupons", label: "Coupons", icon: Tag, permission: "coupons.manage" },
       { id: "reviews", label: "Reviews", icon: Star, permission: "reviews.manage" },
     ],
@@ -2282,7 +2285,8 @@ const AdminDashboard = () => {
           {activeTab === "notifications" && <NotificationSystem />}
           {activeTab === "activity" && <ActivityLogs />}
           {activeTab === "status" && <UserStatusManagement />}
-          {activeTab === "coupons" && <CouponManagement />}
+          {activeTab === "promotions" && <PromotionManagement />}
+          {activeTab === "coupons" && <PromotionManagement defaultTab="coupons" />}
           {activeTab === "warranties" && <WarrantyManagement />}
           {activeTab === "settings" && <SystemSettingsPanel />}
           {activeTab === "notes" && <NotesManagement />}

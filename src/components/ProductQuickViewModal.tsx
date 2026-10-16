@@ -189,7 +189,7 @@ export const ProductQuickViewModal = ({
           {language === "km" ? `មើលត្រួសៗ: ${displayName}` : `Quick View: ${displayName}`}
         </DialogTitle>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 max-h-[85vh] overflow-y-auto sm:overflow-hidden divide-y md:divide-y-0 md:divide-x divide-border/50">
+        <div className="grid grid-cols-1 md:grid-cols-12 max-h-[calc(100dvh-2rem)] sm:max-h-[88vh] overflow-y-auto md:overflow-hidden divide-y md:divide-y-0 md:divide-x divide-border/50">
           {/* Left Column: Visual Media & Gallery (5 cols on desktop) */}
           <div className="md:col-span-5 p-4 sm:p-5 flex flex-col justify-between bg-muted/20">
             <div>

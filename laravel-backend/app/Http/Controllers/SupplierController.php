@@ -7,14 +7,39 @@ use App\Models\Supplier;
 
 class SupplierController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Supplier::withCount('purchases')->get());
+        $q = trim((string) ($request->get('q') ?? $request->get('search') ?? ''));
+
+        $query = Supplier::withCount('purchases');
+
+        if (!empty($q)) {
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('company_name', 'like', "%{$q}%")
+                    ->orWhere('phone', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%");
+            });
+        }
+
+        $suppliers = $query->latest()->get();
+
+        return response()->json([
+            'success'   => true,
+            'suppliers' => $suppliers,
+            'data'      => $suppliers,
+        ]);
     }
 
     public function show($id)
     {
-        return $this->success(Supplier::with('purchases')->findOrFail($id));
+        $supplier = Supplier::with('purchases')->findOrFail($id);
+
+        return response()->json([
+            'success'  => true,
+            'supplier' => $supplier,
+            'data'     => $supplier,
+        ]);
     }
 
     public function store(Request $request)
@@ -31,12 +56,19 @@ class SupplierController extends Controller
         ]);
 
         $supplier = Supplier::create($validated);
-        return $this->success($supplier, 'Supplier created', 201);
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Supplier created successfully',
+            'supplier' => $supplier,
+            'data'     => $supplier,
+        ], 201);
     }
 
     public function update(Request $request, $id)
     {
         $supplier = Supplier::findOrFail($id);
+
         $validated = $request->validate([
             'name'           => 'sometimes|string|max:150',
             'company_name'   => 'nullable|string|max:150',
@@ -49,13 +81,23 @@ class SupplierController extends Controller
         ]);
 
         $supplier->update($validated);
-        return $this->success($supplier, 'Supplier updated');
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Supplier updated successfully',
+            'supplier' => $supplier,
+            'data'     => $supplier,
+        ]);
     }
 
     public function destroy($id)
     {
         $supplier = Supplier::findOrFail($id);
         $supplier->delete();
-        return $this->success(null, 'Supplier deleted');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Supplier deleted successfully',
+        ]);
     }
 }

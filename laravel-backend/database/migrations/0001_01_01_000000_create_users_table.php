@@ -16,6 +16,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone')->nullable();
+            $table->string('telegram')->nullable();
+            $table->string('facebook_name')->nullable();
             $table->text('address')->nullable();
             $table->string('role')->default('customer'); // 'admin', 'staff', 'customer'
             $table->boolean('is_active')->default(true);

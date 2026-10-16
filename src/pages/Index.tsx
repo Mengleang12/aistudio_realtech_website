@@ -16,6 +16,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { StoreFooter } from "@/components/StoreFooter";
 import { StoreDesktopTopBar } from "@/components/StoreDesktopTopBar";
 import { StoreTrustBar } from "@/components/StoreTrustBar";
+import { PromotionsSection } from "@/components/PromotionsSection";
 
 const Index = () => {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -68,6 +69,11 @@ const Index = () => {
           ))}
         </div>
       );
+    }
+
+    // Promotions Tab selected
+    if (activeCategory === "promotions") {
+      return <PromotionsSection />;
     }
 
     // Specific category selected

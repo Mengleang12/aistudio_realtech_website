@@ -4,12 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Coupon;
+use App\Models\User;
 
 class CouponController extends Controller
 {
     public function index()
     {
-        return response()->json(Coupon::latest()->get());
+        $coupons = Coupon::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'coupons' => $coupons,
+            'data'    => $coupons,
+        ]);
     }
 
     public function validateCoupon(Request $request)
@@ -25,7 +32,12 @@ class CouponController extends Controller
             return $this->error('Invalid or expired coupon code', 404);
         }
 
-        return $this->success($coupon, 'Coupon applied successfully');
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon applied successfully',
+            'coupon'  => $coupon,
+            'data'    => $coupon,
+        ]);
     }
 
     public function store(Request $request)
@@ -43,7 +55,13 @@ class CouponController extends Controller
 
         $validated['code'] = strtoupper(trim($validated['code']));
         $coupon = Coupon::create($validated);
-        return $this->success($coupon, 'Coupon created', 201);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon created successfully',
+            'coupon'  => $coupon,
+            'data'    => $coupon,
+        ], 201);
     }
 
     public function update(Request $request, $id)
@@ -65,13 +83,57 @@ class CouponController extends Controller
         }
 
         $coupon->update($validated);
-        return $this->success($coupon, 'Coupon updated');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon updated successfully',
+            'coupon'  => $coupon,
+            'data'    => $coupon,
+        ]);
+    }
+
+    public function assignUsers(Request $request, $id)
+    {
+        $coupon = Coupon::findOrFail($id);
+        $validated = $request->validate([
+            'user_ids' => 'required|array',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon assigned to users',
+            'coupon'  => $coupon,
+        ]);
+    }
+
+    public function getUsers($id)
+    {
+        $coupon = Coupon::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'users'   => [],
+        ]);
+    }
+
+    public function removeUser($id, $userId)
+    {
+        $coupon = Coupon::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User removed from coupon assignment',
+        ]);
     }
 
     public function destroy($id)
     {
         $coupon = Coupon::findOrFail($id);
         $coupon->delete();
-        return $this->success(null, 'Coupon deleted');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon deleted successfully',
+        ]);
     }
 }

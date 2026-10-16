@@ -2,5 +2,5 @@
   "name": "Realtech",
   "description": "Realtech MacBook & Portable Monitor Store",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": []
 }

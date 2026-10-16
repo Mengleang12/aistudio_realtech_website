@@ -1,4 +1,4 @@
-import { Phone, Send, MapPin, Clock, ShieldCheck, Truck, FileText, ShoppingBag, Heart, ChevronDown } from "lucide-react";
+import { Phone, Send, MapPin, Clock, ShieldCheck, Truck, FileText, ShoppingBag, Heart, ChevronDown, Flame } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage, useTranslations } from "@/contexts/LanguageContext";
@@ -83,6 +83,16 @@ export const StoreDesktopTopBar = () => {
 
         {/* Right: Quick Services, Wishlist, Language & Theme */}
         <div className="flex items-center gap-4">
+          <Link
+            to="/promotions"
+            className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold hover:text-amber-700 transition-colors"
+          >
+            <Flame className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+            <span>{language === "km" ? "ប្រូម៉ូសិនពិសេស" : "Hot Promotions"}</span>
+          </Link>
+
+          <span className="text-border">|</span>
+
           <Link
             to="/wishlist"
             className="flex items-center gap-1 hover:text-foreground transition-colors"

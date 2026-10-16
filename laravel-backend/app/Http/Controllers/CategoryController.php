@@ -9,12 +9,24 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        return response()->json(Category::where('is_active', true)->withCount('products')->orderBy('sort_order')->get());
+        $categories = Category::where('is_active', true)->withCount('products')->orderBy('sort_order')->get();
+
+        return response()->json([
+            'success'    => true,
+            'categories' => $categories,
+            'data'       => $categories,
+        ]);
     }
 
     public function show($id)
     {
-        return $this->success(Category::with('products')->findOrFail($id));
+        $category = Category::with('products')->findOrFail($id);
+
+        return response()->json([
+            'success'  => true,
+            'category' => $category,
+            'data'     => $category,
+        ]);
     }
 
     public function store(Request $request)
@@ -30,12 +42,19 @@ class CategoryController extends Controller
         ]);
 
         $category = Category::create($validated);
-        return $this->success($category, 'Category created', 201);
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Category created successfully',
+            'category' => $category,
+            'data'     => $category,
+        ], 201);
     }
 
     public function update(Request $request, $id)
     {
         $category = Category::findOrFail($id);
+
         $validated = $request->validate([
             'name'        => 'sometimes|string|max:100',
             'slug'        => 'nullable|string|max:120|unique:categories,slug,' . $id,
@@ -47,13 +66,23 @@ class CategoryController extends Controller
         ]);
 
         $category->update($validated);
-        return $this->success($category, 'Category updated');
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Category updated successfully',
+            'category' => $category,
+            'data'     => $category,
+        ]);
     }
 
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
         $category->delete();
-        return $this->success(null, 'Category deleted');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category deleted successfully',
+        ]);
     }
 }

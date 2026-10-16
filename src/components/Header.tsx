@@ -17,6 +17,7 @@ import {
   Laptop,
   Monitor,
   Package,
+  Flame,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLanguage, useTranslations } from "@/contexts/LanguageContext";
@@ -229,6 +230,19 @@ export const Header = ({
               <span>{language === "km" ? "ជំនួយបច្ចេកទេស" : "Tech Support"}</span>
             </a>
           )}
+
+          {/* Promotions Tab Link */}
+          <Link
+            to="/promotions"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all hover:scale-102 active:scale-95 group"
+            title={language === "km" ? "ប្រូម៉ូសិនពិសេស" : "Hot Promotions"}
+          >
+            <Flame className="w-3.5 h-3.5 text-amber-500 group-hover:text-red-500 transition-colors animate-pulse" />
+            <span>{language === "km" ? "ប្រូម៉ូសិន" : "Promotions"}</span>
+            <span className="hidden lg:inline text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full bg-red-600 text-white">
+              HOT
+            </span>
+          </Link>
 
           {/* Wishlist Link */}
           <Link

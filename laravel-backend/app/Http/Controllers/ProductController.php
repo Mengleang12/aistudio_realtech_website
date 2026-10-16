@@ -9,18 +9,36 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'brand'])->where('is_active', true);
+        $query = Product::with(['category', 'brand']);
 
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
+        // Check visibility
+        if (!$request->boolean('include_hidden') && !$request->get('all') && $request->get('status') !== 'all') {
+            $query->where('is_active', true);
         }
 
-        if ($request->has('brand_id')) {
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        } elseif ($request->filled('category')) {
+            $cat = $request->category;
+            $query->whereHas('category', function ($q) use ($cat) {
+                $q->where('slug', $cat)->orWhere('name', $cat);
+            });
+        }
+
+        if ($request->filled('brand_id')) {
             $query->where('brand_id', $request->brand_id);
         }
 
         if ($request->has('featured') && $request->boolean('featured')) {
             $query->where('is_featured', true);
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', (float) $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', (float) $request->max_price);
         }
 
         if ($request->filled('search')) {
@@ -33,10 +51,19 @@ class ProductController extends Controller
             });
         }
 
-        $perPage = min(100, max(1, (int) $request->get('per_page', 24)));
+        $perPage = min(100, max(1, (int) $request->get('limit', $request->get('per_page', 24))));
         $products = $query->latest()->paginate($perPage);
 
-        return response()->json($products);
+        return response()->json([
+            'products'   => $products->items(),
+            'data'       => $products->items(),
+            'pagination' => [
+                'page'        => $products->currentPage(),
+                'limit'       => $products->perPage(),
+                'total'       => $products->total(),
+                'total_pages' => $products->lastPage(),
+            ],
+        ]);
     }
 
     public function show($id)
@@ -51,7 +78,11 @@ class ProductController extends Controller
             return $this->error('Product not found', 404);
         }
 
-        return $this->success($product);
+        return response()->json([
+            'success' => true,
+            'product' => $product,
+            'data'    => $product,
+        ]);
     }
 
     public function store(Request $request)
@@ -77,7 +108,13 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
-        return $this->success($product, 'Product created successfully', 201);
+        return response()->json([
+            'success' => true,
+            'id'      => $product->id,
+            'product' => $product,
+            'data'    => $product,
+            'message' => 'Product created successfully',
+        ], 201);
     }
 
     public function update(Request $request, $id)
@@ -105,7 +142,13 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return $this->success($product, 'Product updated successfully');
+        return response()->json([
+            'success' => true,
+            'id'      => $product->id,
+            'product' => $product,
+            'data'    => $product,
+            'message' => 'Product updated successfully',
+        ]);
     }
 
     public function destroy($id)
@@ -113,6 +156,9 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->delete();
 
-        return $this->success(null, 'Product deleted successfully');
+        return response()->json([
+            'success' => true,
+            'message' => 'Product deleted successfully',
+        ]);
     }
 }

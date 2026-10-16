@@ -146,6 +146,7 @@ export function StoreFooter() {
   ];
 
   const customerServices = [
+    { label: language === "km" ? "ប្រូម៉ូសិនពិសេស & គូប៉ុង" : "Promotions & Vouchers", href: "/promotions" },
     { label: language === "km" ? "ការបញ្ជាទិញរបស់ខ្ញុំ" : "My Orders", href: "/my-purchases" },
     { label: language === "km" ? "គោលការណ៍ធានា & ប្តូរ" : "Warranty & Return Policy", href: "#" },
     { label: language === "km" ? "វិធីសាស្រ្តដឹកជញ្ជូន" : "Shipping & Delivery Info", href: "#" },

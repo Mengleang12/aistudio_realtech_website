@@ -16,6 +16,8 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
+        'telegram',
+        'facebook_name',
         'address',
         'role', // 'admin', 'staff', 'customer'
         'is_active',

@@ -54,14 +54,16 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $validated = $request->validate([
-            'email'    => 'required|string|email',
-            'password' => 'required|string',
-        ]);
+        $identifier = $request->input('username') ?? $request->input('email');
+        $password = $request->input('password');
 
-        $user = User::where('email', $validated['email'])->first();
+        if (!$identifier || !$password) {
+            return $this->error('Email or username and password are required', 422);
+        }
 
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
+        $user = User::where('email', $identifier)->orWhere('name', $identifier)->first();
+
+        if (!$user || !Hash::check($password, $user->password)) {
             return $this->error('Invalid credentials', 401);
         }
 
@@ -70,23 +72,42 @@ class AuthController extends Controller
         }
 
         $token = $this->generateJwt($user);
+        $userData = [
+            'id'        => $user->id,
+            'username'  => $user->name,
+            'name'      => $user->name,
+            'full_name' => $user->full_name ?? $user->name,
+            'email'     => $user->email,
+            'role'      => $user->role,
+            'roles'     => [$user->role],
+        ];
 
-        return $this->success([
-            'token' => $token,
-            'user'  => $user,
-        ], 'Login successful');
+        return response()->json([
+            'success' => true,
+            'message' => 'Login successful',
+            'token'   => $token,
+            'user'    => $userData,
+            'roles'   => [$user->role],
+            'data'    => [
+                'token' => $token,
+                'user'  => $userData,
+                'roles' => [$user->role],
+            ],
+        ]);
     }
 
     public function adminLogin(Request $request)
     {
-        $validated = $request->validate([
-            'email'    => 'required|string|email',
-            'password' => 'required|string',
-        ]);
+        $identifier = $request->input('username') ?? $request->input('email');
+        $password = $request->input('password');
 
-        $user = User::where('email', $validated['email'])->first();
+        if (!$identifier || !$password) {
+            return $this->error('Email or username and password are required', 422);
+        }
 
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
+        $user = User::where('email', $identifier)->orWhere('name', $identifier)->first();
+
+        if (!$user || !Hash::check($password, $user->password)) {
             return $this->error('Invalid credentials', 401);
         }
 
@@ -99,12 +120,54 @@ class AuthController extends Controller
         }
 
         $token = $this->generateJwt($user);
+        $userData = [
+            'id'        => $user->id,
+            'username'  => $user->name,
+            'name'      => $user->name,
+            'full_name' => $user->full_name ?? $user->name,
+            'email'     => $user->email,
+            'role'      => $user->role,
+            'roles'     => [$user->role],
+        ];
 
-        return $this->success([
-            'token' => $token,
-            'user'  => $user,
-            'roles' => [$user->role],
-        ], 'Admin login successful');
+        return response()->json([
+            'success' => true,
+            'message' => 'Admin login successful',
+            'token'   => $token,
+            'user'    => $userData,
+            'roles'   => [$user->role],
+            'data'    => [
+                'token' => $token,
+                'user'  => $userData,
+                'roles' => [$user->role],
+            ],
+        ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'username'         => 'nullable|string',
+            'current_password' => 'required|string',
+            'new_password'     => 'required|string|min:6',
+        ]);
+
+        $user = $request->user() ?? $request->get('auth_user');
+        if (!$user && !empty($validated['username'])) {
+            $user = User::where('email', $validated['username'])->orWhere('name', $validated['username'])->first();
+        }
+
+        if (!$user || !Hash::check($validated['current_password'], $user->password)) {
+            return $this->error('Invalid current password', 400);
+        }
+
+        $user->password = Hash::make($validated['new_password']);
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully',
+        ]);
     }
 
     public function me(Request $request)

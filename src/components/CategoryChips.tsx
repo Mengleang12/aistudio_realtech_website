@@ -25,11 +25,13 @@ export const CategoryChips = ({ categories, activeCategory, onCategoryChange }: 
   }, [activeCategory]);
 
   const allItems = [
-    { slug: "all", name: language === "km" ? "ទាំងអស់" : "All", icon_url: null },
+    { slug: "all", name: language === "km" ? "ទាំងអស់" : "All", icon_url: null, isPromo: false },
+    { slug: "promotions", name: language === "km" ? "🔥 ប្រូម៉ូសិន" : "🔥 Promotions", icon_url: null, isPromo: true },
     ...categories.map(c => ({
       slug: c.slug,
       name: language === "km" && c.name_km ? c.name_km : c.name,
       icon_url: c.icon_url,
+      isPromo: false,
     })),
   ];
 
@@ -50,8 +52,12 @@ export const CategoryChips = ({ categories, activeCategory, onCategoryChange }: 
               className={cn(
                 "shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 whitespace-nowrap",
                 isActive
-                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                  : "bg-background text-foreground border-border hover:border-primary/50 hover:text-primary"
+                  ? item.isPromo
+                    ? "bg-gradient-to-r from-amber-500 via-rose-500 to-red-600 text-white border-transparent shadow-md font-bold"
+                    : "bg-primary text-primary-foreground border-primary shadow-sm"
+                  : item.isPromo
+                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/20 font-semibold"
+                    : "bg-background text-foreground border-border hover:border-primary/50 hover:text-primary"
               )}
             >
               {item.icon_url && (

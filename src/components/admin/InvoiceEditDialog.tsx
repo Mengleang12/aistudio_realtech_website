@@ -86,11 +86,11 @@ export const InvoiceEditDialog = ({ order, open, onOpenChange }: InvoiceEditDial
       size="3xl"
     >
         <Tabs defaultValue="edit" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 mt-4">
-            <TabsTrigger value="edit" className="gap-1.5 text-xs"><Pencil className="w-3.5 h-3.5" /> Edit</TabsTrigger>
-            <TabsTrigger value="attachments" className="gap-1.5 text-xs"><Image className="w-3.5 h-3.5" /> Files</TabsTrigger>
-            <TabsTrigger value="payments" className="gap-1.5 text-xs"><CreditCard className="w-3.5 h-3.5" /> Payments</TabsTrigger>
-            <TabsTrigger value="handover" className="gap-1.5 text-xs"><FileCheck2 className="w-3.5 h-3.5" /> Received Notes</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto gap-1 p-1 mt-2">
+            <TabsTrigger value="edit" className="gap-1.5 text-xs py-2"><Pencil className="w-3.5 h-3.5 shrink-0" /> Edit</TabsTrigger>
+            <TabsTrigger value="attachments" className="gap-1.5 text-xs py-2"><Image className="w-3.5 h-3.5 shrink-0" /> Files</TabsTrigger>
+            <TabsTrigger value="payments" className="gap-1.5 text-xs py-2"><CreditCard className="w-3.5 h-3.5 shrink-0" /> Payments</TabsTrigger>
+            <TabsTrigger value="handover" className="gap-1.5 text-xs py-2 truncate"><FileCheck2 className="w-3.5 h-3.5 shrink-0" /> Received Notes</TabsTrigger>
           </TabsList>
           <TabsContent value="edit"><EditTab order={fullOrder || order} onClose={() => onOpenChange(false)} /></TabsContent>
           <TabsContent value="attachments"><AttachmentsTab order={fullOrder || order} /></TabsContent>

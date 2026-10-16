@@ -402,7 +402,7 @@ export const UserManagement = () => {
               </DialogHeader>
 
               {/* Customer Info Cards */}
-              <div className="grid grid-cols-3 gap-3 mt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 mt-2">
                 <div className="bg-muted/50 rounded-lg p-3 text-center">
                   <p className="text-xs text-muted-foreground mb-1">Total Spent</p>
                   <p className="text-lg font-bold">${totalSpent.toFixed(2)}</p>

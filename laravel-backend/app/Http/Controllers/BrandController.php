@@ -9,12 +9,24 @@ class BrandController extends Controller
 {
     public function index()
     {
-        return response()->json(Brand::where('is_active', true)->withCount('products')->get());
+        $brands = Brand::where('is_active', true)->withCount('products')->get();
+
+        return response()->json([
+            'success' => true,
+            'brands'  => $brands,
+            'data'    => $brands,
+        ]);
     }
 
     public function show($id)
     {
-        return $this->success(Brand::with('products')->findOrFail($id));
+        $brand = Brand::with('products')->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'brand'   => $brand,
+            'data'    => $brand,
+        ]);
     }
 
     public function store(Request $request)
@@ -29,12 +41,19 @@ class BrandController extends Controller
         ]);
 
         $brand = Brand::create($validated);
-        return $this->success($brand, 'Brand created', 201);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Brand created successfully',
+            'brand'   => $brand,
+            'data'    => $brand,
+        ], 201);
     }
 
     public function update(Request $request, $id)
     {
         $brand = Brand::findOrFail($id);
+
         $validated = $request->validate([
             'name'        => 'sometimes|string|max:100',
             'slug'        => 'nullable|string|max:120|unique:brands,slug,' . $id,
@@ -45,13 +64,23 @@ class BrandController extends Controller
         ]);
 
         $brand->update($validated);
-        return $this->success($brand, 'Brand updated');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Brand updated successfully',
+            'brand'   => $brand,
+            'data'    => $brand,
+        ]);
     }
 
     public function destroy($id)
     {
         $brand = Brand::findOrFail($id);
         $brand->delete();
-        return $this->success(null, 'Brand deleted');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Brand deleted successfully',
+        ]);
     }
 }

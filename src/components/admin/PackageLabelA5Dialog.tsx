@@ -31,6 +31,8 @@ export interface PackageLabelPrintData {
   showCod?: boolean;
   showItems?: boolean;
   singleLineLocation?: boolean;
+  logoUrl?: string;
+  siteName?: string;
 }
 
 export interface CambodiaProvinceDef {
@@ -425,17 +427,57 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
       margin-bottom: 2mm;
     }
 
-    .triangle-container {
+    .brand-header-top {
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 2mm;
+    }
+
+    .brand-top-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    .brand-top-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #000000;
+    }
+
+    .symbols-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
       margin: 1mm 0 2mm 0;
       flex-shrink: 0;
     }
 
+    .triangle-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .triangle-container svg {
-      width: 96px;
-      height: 84px;
+      width: 90px;
+      height: 78px;
+    }
+
+    .fragile-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fragile-symbol {
+      width: 50px;
+      height: 50px;
     }
 
     .warning-text {
@@ -578,30 +620,45 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
 <body>
   <div class="label-page">
     <div class="top-section">
+      ${data.logoUrl || data.siteName ? `
+        <div class="brand-header-top">
+          <img src="${data.logoUrl || '/realtech-logo.png'}" alt="Logo" class="brand-top-logo" onerror="this.style.display='none'" />
+          <span class="brand-top-title">${data.siteName || 'REALTECH'}</span>
+        </div>
+      ` : ""}
+
       ${data.courier && data.courier !== "None" ? `
         <div>
           <span class="courier-badge">${data.courier}</span>
         </div>
       ` : ""}
 
-      <div class="triangle-container">
-        <svg viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M 50 7 L 92 78 C 94 82 91 86 86 86 L 14 86 C 9 86 6 82 8 78 L 50 7 Z"
-            fill="#FFD200"
-            stroke="#000000"
-            stroke-width="7"
-            stroke-linejoin="round"
-            stroke-linecap="round"
-          />
-          <path
-            d="M 50 28 L 50 56"
-            stroke="#000000"
-            stroke-width="7.5"
-            stroke-linecap="round"
-          />
-          <circle cx="50" cy="71" r="4.2" fill="#000000" />
-        </svg>
+      <div class="symbols-container">
+        <div class="triangle-container">
+          <svg viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M 50 7 L 92 78 C 94 82 91 86 86 86 L 14 86 C 9 86 6 82 8 78 L 50 7 Z"
+              fill="#FFD200"
+              stroke="#000000"
+              stroke-width="7"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            />
+            <path
+              d="M 50 28 L 50 56"
+              stroke="#000000"
+              stroke-width="7.5"
+              stroke-linecap="round"
+            />
+            <circle cx="50" cy="71" r="4.2" fill="#000000" />
+          </svg>
+        </div>
+        <div class="fragile-container">
+          <svg viewBox="0 0 24 24" class="fragile-symbol" fill="none" stroke="#000000" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M8 22h8M19 3v4c0 3.31-2.69 6-6 6h-2c-3.31 0-6-2.69-6-6V3h14zM12 13v9" />
+            <path d="M9 7l2 3-2 3" />
+          </svg>
+        </div>
       </div>
 
       <div class="warning-text">${data.warningText || "ប្រយ័ត្នបាក់បែក ឬ សើម"}</div>
@@ -827,7 +884,7 @@ export const PackageLabelA5Dialog = ({ order, initialData, open, onOpenChange }:
       const remaining = Math.max(0, amt - paid);
       if (remaining > 0) {
         setCodAmount(`$${remaining.toFixed(2)}`);
-        setShowCod(true);
+        setShowCod(false);
       } else {
         setCodAmount("");
         setShowCod(false);
@@ -940,6 +997,8 @@ export const PackageLabelA5Dialog = ({ order, initialData, open, onOpenChange }:
       showCod,
       showItems,
       singleLineLocation,
+      logoUrl: "/realtech-logo.png",
+      siteName: "REALTECH",
     }, mode);
     toast.success(mode === "window" ? "Opening label in new tab..." : "Opening A5 print dialog...");
   };
@@ -1248,9 +1307,19 @@ export const PackageLabelA5Dialog = ({ order, initialData, open, onOpenChange }:
               </div>
             )}
 
-            {/* Warning Triangle */}
-            <div className="my-1 shrink-0">
-              <WarningTriangleSvg className="w-24 h-20" />
+            {/* Brand Logo & Name */}
+            <div className="flex items-center justify-center gap-1.5 mb-1 shrink-0">
+              <img src="/realtech-logo.png" alt="Logo" className="w-5 h-5 object-contain" onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }} />
+              <span className="font-extrabold text-[12px] uppercase tracking-wider text-black">Realtech</span>
+            </div>
+
+            {/* Warning Triangle & Fragile Broken Glass Symbol */}
+            <div className="my-1 flex items-center justify-center gap-3 shrink-0">
+              <WarningTriangleSvg className="w-20 h-16" />
+              <svg viewBox="0 0 24 24" className="w-9 h-9 text-black shrink-0" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2v20M8 22h8M19 3v4c0 3.31-2.69 6-6 6h-2c-3.31 0-6-2.69-6-6V3h14zM12 13v9" />
+                <path d="M9 7l2 3-2 3" />
+              </svg>
             </div>
 
             {/* Warning Text */}

@@ -22,6 +22,15 @@ class CheckRole
             ], 401);
         }
 
+        // Super admins have access to all routes
+        if ($user->role === 'super_admin' || $user->role === 'admin') {
+            return $next($request);
+        }
+
+        if (in_array('staff', $roles) && $user->isStaff()) {
+            return $next($request);
+        }
+
         if (!in_array($user->role, $roles)) {
             return response()->json([
                 'success' => false,

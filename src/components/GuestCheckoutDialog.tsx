@@ -15,24 +15,24 @@ const GuestCheckoutDialog = ({ open, onOpenChange, onSelectAccount, onSelectGues
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle className="text-base">
+      <DialogContent className="sm:max-w-sm p-5 sm:p-6">
+        <DialogHeader className="p-0 pb-3 pr-8">
+          <DialogTitle className="text-base font-bold">
             {language === "km" ? "របៀបបង់ប្រាក់" : "How would you like to checkout?"}
           </DialogTitle>
-          <DialogDescription className="text-xs">
+          <DialogDescription className="text-xs text-muted-foreground mt-1">
             {language === "km"
               ? "សូមជ្រើសរើសបង់ប្រាក់ដោយគណនី ឬជាភ្ញៀវ"
               : "Sign in for order history, or continue as a guest"}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-2 pt-2">
-          <Button className="w-full gap-2 h-11" onClick={onSelectAccount}>
+        <div className="space-y-2.5 pt-2">
+          <Button className="w-full gap-2.5 h-11 text-sm font-semibold rounded-xl" onClick={onSelectAccount}>
             <User className="w-4 h-4" />
             {language === "km" ? "បង់ប្រាក់ជាមួយគណនី" : "Checkout with Account"}
           </Button>
-          <Button variant="outline" className="w-full gap-2 h-11" onClick={onSelectGuest}>
+          <Button variant="outline" className="w-full gap-2.5 h-11 text-sm font-semibold rounded-xl" onClick={onSelectGuest}>
             <UserX className="w-4 h-4" />
             {language === "km" ? "បង់ប្រាក់ជាភ្ញៀវ" : "Continue as Guest"}
           </Button>
