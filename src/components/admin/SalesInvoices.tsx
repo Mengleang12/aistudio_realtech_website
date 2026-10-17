@@ -854,19 +854,19 @@ const InvoicesTab = () => {
           flex: 1;
         }
         .khmer-warning {
-          font-size: 18px;
-          font-weight: 800;
+          font-size: 24px;
+          font-weight: 900;
           color: #92400e;
           line-height: 1.25;
           letter-spacing: 0.3px;
         }
         .en-warning {
-          font-size: 10.5px;
+          font-size: 13px;
           font-weight: 800;
           color: #b45309;
           letter-spacing: 1.5px;
           text-transform: uppercase;
-          margin-top: 2px;
+          margin-top: 3px;
         }
 
         /* Slip Content */
@@ -916,25 +916,25 @@ const InvoicesTab = () => {
         }
 
         .sender-phone-num {
-          font-size: 21px;
+          font-size: 26px;
           font-weight: 800;
           color: #1e293b;
           letter-spacing: 0.8px;
           font-family: 'Inter', system-ui, sans-serif;
         }
         .receiver-phone-num {
-          font-size: 30px;
+          font-size: 44px;
           font-weight: 900;
           color: #000000;
-          letter-spacing: 1.5px;
+          letter-spacing: 2px;
           line-height: 1.15;
           font-family: 'Inter', system-ui, sans-serif;
         }
         .location-text {
-          font-size: 19px;
-          font-weight: 700;
+          font-size: 28px;
+          font-weight: 800;
           color: #0f172a;
-          line-height: 1.45;
+          line-height: 1.4;
           white-space: pre-wrap;
           word-break: break-word;
         }

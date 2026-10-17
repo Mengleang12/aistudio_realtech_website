@@ -33,6 +33,7 @@ export interface PackageLabelPrintData {
   singleLineLocation?: boolean;
   logoUrl?: string;
   siteName?: string;
+  paperSize?: "a5" | "a4" | "thermal_100x150" | "thermal_76x130";
 }
 
 export interface CambodiaProvinceDef {
@@ -375,8 +376,16 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
     }
 
     @page {
-      size: A5 portrait;
-      margin: 4mm 6mm;
+      size: ${
+        data.paperSize === 'a4'
+          ? 'A4 portrait'
+          : data.paperSize === 'thermal_100x150'
+          ? '100mm 150mm'
+          : data.paperSize === 'thermal_76x130'
+          ? '76mm 130mm'
+          : 'A5 portrait'
+      };
+      margin: ${data.paperSize === 'a4' ? '6mm 8mm' : '4mm 5mm'};
     }
 
     html, body {
@@ -395,13 +404,13 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
     .label-page {
       width: 100%;
       height: 100%;
-      max-height: 200mm;
+      max-height: ${data.paperSize === 'a4' ? '280mm' : data.paperSize === 'thermal_100x150' ? '142mm' : data.paperSize === 'thermal_76x130' ? '122mm' : '200mm'};
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
       text-align: center;
-      padding: 4mm 3mm;
+      padding: ${data.paperSize === 'a4' ? '6mm 5mm' : '3mm 2mm'};
       box-sizing: border-box;
       page-break-inside: avoid;
       break-inside: avoid;
@@ -417,12 +426,12 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
 
     .courier-badge {
       display: inline-block;
-      border: 2.5px solid #000000;
-      padding: 2px 14px;
-      border-radius: 6px;
+      border: 3px solid #000000;
+      padding: 3px 18px;
+      border-radius: 8px;
       font-weight: 900;
-      font-size: 15px;
-      letter-spacing: 0.8px;
+      font-size: ${data.paperSize === 'a4' ? '22px' : '17px'};
+      letter-spacing: 1px;
       text-transform: uppercase;
       margin-bottom: 2mm;
     }
@@ -431,20 +440,20 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 2mm;
     }
 
     .brand-top-logo {
-      width: 32px;
-      height: 32px;
+      width: ${data.paperSize === 'a4' ? '44px' : '36px'};
+      height: ${data.paperSize === 'a4' ? '44px' : '36px'};
       object-fit: contain;
     }
 
     .brand-top-title {
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: 0.8px;
+      font-size: ${data.paperSize === 'a4' ? '20px' : '16px'};
+      font-weight: 900;
+      letter-spacing: 1px;
       text-transform: uppercase;
       color: #000000;
     }
@@ -453,7 +462,7 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 20px;
       margin: 1mm 0 2mm 0;
       flex-shrink: 0;
     }
@@ -465,8 +474,8 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
     }
 
     .triangle-container svg {
-      width: 90px;
-      height: 78px;
+      width: ${data.paperSize === 'a4' ? '140px' : data.paperSize === 'thermal_100x150' ? '95px' : '115px'};
+      height: ${data.paperSize === 'a4' ? '122px' : data.paperSize === 'thermal_100x150' ? '82px' : '100px'};
     }
 
     .fragile-container {
@@ -476,13 +485,13 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
     }
 
     .fragile-symbol {
-      width: 50px;
-      height: 50px;
+      width: ${data.paperSize === 'a4' ? '80px' : data.paperSize === 'thermal_100x150' ? '54px' : '65px'};
+      height: ${data.paperSize === 'a4' ? '80px' : data.paperSize === 'thermal_100x150' ? '54px' : '65px'};
     }
 
     .warning-text {
-      font-size: 21px;
-      font-weight: 800;
+      font-size: ${data.paperSize === 'a4' ? '32px' : data.paperSize === 'thermal_100x150' ? '22px' : '28px'};
+      font-weight: 900;
       line-height: 1.25;
       color: #000000;
       margin-bottom: 2mm;
@@ -493,8 +502,8 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
     }
 
     .sender-text {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: ${data.paperSize === 'a4' ? '28px' : data.paperSize === 'thermal_100x150' ? '19px' : '23px'};
+      font-weight: 800;
       line-height: 1.3;
       color: #111827;
       margin-bottom: 2mm;
@@ -506,14 +515,14 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1mm 0;
+      padding: 1.5mm 0;
     }
 
     .receiver-phone {
-      font-size: 34px;
+      font-size: ${data.paperSize === 'a4' ? '56px' : data.paperSize === 'thermal_100x150' ? '38px' : '46px'};
       font-weight: 900;
       line-height: 1.15;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       color: #000000;
       font-family: 'Inter', monospace, sans-serif;
       margin: 1.5mm 0;
@@ -524,9 +533,9 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
     }
 
     .destination-text {
-      font-size: 24px;
-      font-weight: 800;
-      line-height: 1.25;
+      font-size: ${data.paperSize === 'a4' ? '38px' : data.paperSize === 'thermal_100x150' ? '26px' : '32px'};
+      font-weight: 900;
+      line-height: 1.3;
       color: #000000;
       margin: 1.5mm 0;
       max-width: 100%;
@@ -535,14 +544,14 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
     }
 
     .city-part {
-      font-weight: 700;
+      font-weight: 800;
       color: #111827;
     }
 
     .loc-sep {
       color: #4b5563;
-      font-weight: 600;
-      margin: 0 4px;
+      font-weight: 700;
+      margin: 0 6px;
     }
 
     .branch-part {
@@ -551,16 +560,16 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
     }
 
     .city-text {
-      font-size: 22px;
-      font-weight: 700;
+      font-size: ${data.paperSize === 'a4' ? '34px' : '28px'};
+      font-weight: 800;
       line-height: 1.25;
       color: #000000;
       margin-bottom: 1.5mm;
     }
 
     .branch-text {
-      font-size: 23px;
-      font-weight: 800;
+      font-size: ${data.paperSize === 'a4' ? '38px' : '32px'};
+      font-weight: 900;
       line-height: 1.3;
       color: #000000;
       max-width: 100%;
@@ -572,12 +581,12 @@ export function printA5PackageLabel(data: PackageLabelPrintData, mode: "auto" | 
       display: inline-block;
       background: #000000;
       color: #ffffff;
-      padding: 4px 18px;
-      border-radius: 6px;
-      font-size: 20px;
+      padding: 5px 22px;
+      border-radius: 8px;
+      font-size: ${data.paperSize === 'a4' ? '28px' : '22px'};
       font-weight: 900;
       letter-spacing: 0.5px;
-      margin: 1.5mm 0;
+      margin: 2mm 0;
     }
 
     .extra-section {
@@ -839,6 +848,59 @@ export const PackageLabelA5Dialog = ({ order, initialData, open, onOpenChange }:
   const [codAmount, setCodAmount] = useState("");
   const [itemsSummary, setItemsSummary] = useState("");
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+  const [paperSize, setPaperSize] = useState<"a5" | "a4" | "thermal_100x150" | "thermal_76x130">("a5");
+  const [smartPasteText, setSmartPasteText] = useState("");
+
+  const receiverPhoneInputRef = useRef<HTMLInputElement>(null);
+  const cityInputRef = useRef<HTMLInputElement>(null);
+  const branchInputRef = useRef<HTMLInputElement>(null);
+
+  // Quick Smart Paste & Auto-fill
+  const handleSmartPaste = (rawText: string) => {
+    if (!rawText || !rawText.trim()) return;
+    const trimmed = rawText.trim();
+
+    // 1. Extract phone number
+    const phoneMatch = trimmed.match(/(?:(?:\+?855|0)[1-9][0-9\s\-]{6,12})/);
+    if (phoneMatch) {
+      const cleanPhone = phoneMatch[0].replace(/[\s\-]/g, '');
+      setReceiverPhone(cleanPhone);
+    }
+
+    // 2. Parse address, province, and courier
+    const parsed = parseCustomerLocation(trimmed);
+    if (parsed.city) setCity(parsed.city);
+    if (parsed.branch) setBranch(parsed.branch);
+    if (parsed.detectedCourier) setCourier(parsed.detectedCourier);
+
+    toast.success("Customer data parsed & auto-filled!");
+    setSmartPasteText("");
+  };
+
+  const handlePasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        handleSmartPaste(text);
+      } else {
+        toast.error("Clipboard is empty");
+      }
+    } catch {
+      toast.error("Please paste directly into the box");
+    }
+  };
+
+  const handleClearForm = () => {
+    setReceiverPhone("");
+    setCity("Phnom Penh");
+    setBranch("");
+    setCourier("None");
+    setCustomerName("");
+    setCodAmount("");
+    setSmartPasteText("");
+    toast.info("Cleared fields for next entry");
+    receiverPhoneInputRef.current?.focus();
+  };
 
   // Optional display toggles
   const [showCustomerName, setShowCustomerName] = useState(false);
@@ -999,8 +1061,9 @@ export const PackageLabelA5Dialog = ({ order, initialData, open, onOpenChange }:
       singleLineLocation,
       logoUrl: "/realtech-logo.png",
       siteName: "REALTECH",
+      paperSize,
     }, mode);
-    toast.success(mode === "window" ? "Opening label in new tab..." : "Opening A5 print dialog...");
+    toast.success(mode === "window" ? "Opening label in new tab..." : "Opening print dialog...");
   };
 
   return (
